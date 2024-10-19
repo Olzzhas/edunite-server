@@ -1,6 +1,6 @@
 module github.com/olzzhas/edunite-server/user_service
 
-go 1.22.3
+go 1.21
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0

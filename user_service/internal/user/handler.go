@@ -2,48 +2,36 @@ package user
 
 import (
 	"context"
-	"github.com/olzzhas/edunite-server/user_service/internal/database"
-	"github.com/olzzhas/edunite-server/user_service/pb"
 
-	"time"
+	"github.com/olzzhas/edunite-server/user_service/pb"
 )
 
-type ServiceServer struct {
+type Handler struct {
+	service *Service
 	pb.UnimplementedUserServiceServer
 }
 
-func (s *ServiceServer) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
-	user := database.User{
-		ID:        4,
-		Name:      req.GetName(),
-		Surname:   req.GetSurname(),
-		Role:      req.GetRole(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Version:   1,
-	}
-
-	return &pb.UserResponse{
-		Id:        int64(user.ID),
-		Name:      user.Name,
-		Surname:   user.Surname,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: user.UpdatedAt.Format(time.RFC3339),
-	}, nil
+// NewUserHandler Конструктор для UserHandler
+func NewUserHandler(service *Service) *Handler {
+	return &Handler{service: service}
 }
 
-func (s *ServiceServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
-	// TODO
-	return nil, nil
+// CreateUser Обработчик для создания пользователя
+func (h *Handler) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
+	return h.service.CreateUser(ctx, req)
 }
 
-func (s *ServiceServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UserResponse, error) {
-	// TODO
-	return nil, nil
+// GetUser Обработчик для получения пользователя по ID
+func (h *Handler) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
+	return h.service.GetUser(ctx, req)
 }
 
-func (s *ServiceServer) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.EmptyResponse, error) {
-	// TODO
-	return nil, nil
+// GetAllUsers Обработчик для получения всех пользователей
+func (h *Handler) GetAllUsers(ctx context.Context, req *pb.EmptyRequest) (*pb.UsersResponse, error) {
+	return h.service.GetAllUsers(ctx, &pb.EmptyRequest{})
+}
+
+// DeleteUser Обработчик для удаления пользователя
+func (h *Handler) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.EmptyResponse, error) {
+	return h.service.DeleteUser(ctx, req)
 }

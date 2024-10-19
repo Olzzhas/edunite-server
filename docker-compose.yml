@@ -1,0 +1,74 @@
+services:
+  postgres_user:
+    image: postgres:13
+    container_name: postgres_user
+    environment:
+      POSTGRES_USER: olzzhas
+      POSTGRES_PASSWORD: olzzhas
+      POSTGRES_DB: userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+
+  postgres_auth:
+    image: postgres:13
+    container_name: postgres_auth
+    environment:
+      POSTGRES_USER: olzzhas
+      POSTGRES_PASSWORD: olzzhas
+      POSTGRES_DB: authdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+
+  flyway_user:
+    image: flyway/flyway:latest
+    command: -url=jdbc:postgresql://postgres_user:5432/userdb -user=olzzhas -password=olzzhas migrate
+    volumes:
+      - ./migrations/user:/flyway/sql
+    depends_on:
+      - postgres_user
+
+  flyway_auth:
+    image: flyway/flyway:latest
+    command: -url=jdbc:postgresql://postgres_auth:5432/authdb -user=olzzhas -password=olzzhas migrate
+    volumes:
+      - ./migrations/auth:/flyway/sql
+    depends_on:
+      - postgres_auth
+
+  user_service:
+    build: ./user_service
+    volumes:
+      - ./user_service/config:/app/config
+    ports:
+      - "50051:50051"
+    depends_on:
+      - postgres_user
+
+  auth_service:
+    build: ./auth_service
+    container_name: auth_service
+    environment:
+      DATABASE_URL: postgres://olzzhas:olzzhas@postgres_auth:5432/authdb?sslmode=disable
+    depends_on:
+      - postgres_auth
+    ports:
+      - "50052:50052"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - user_service
+      - auth_service
+
+volumes:
+  postgres_user_data:
+  postgres_auth_data:

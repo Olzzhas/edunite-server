@@ -19,46 +19,73 @@ type User struct {
 type UserRepository interface {
 	CreateUser(ctx context.Context, u *User) (int, error)
 	GetUserByID(ctx context.Context, id int) (*User, error)
-	UpdateUser(ctx context.Context, u *User) (*User, error)
-	DeleteUser(ctx context.Context, id int) (int, error)
+	GetAllUsers(ctx context.Context) ([]User, error)
+	UpdateUser(ctx context.Context, u *User) error
+	DeleteUser(ctx context.Context, id int) error
 }
 
 type userRepository struct {
 	db *pgxpool.Pool
 }
 
+func NewUserRepository(db *pgxpool.Pool) UserRepository {
+	return &userRepository{db: db}
+}
+
+// CreateUser Создать пользователя
 func (r *userRepository) CreateUser(ctx context.Context, user *User) (int, error) {
 	var id int
 	err := r.db.QueryRow(
 		ctx,
-		`INSERT INTO users (name, surname, role, created_at, updated_at, version) 
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+		`INSERT INTO users (name, surname, role, created_at, updated_at, version)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
 		user.Name, user.Surname, user.Role, time.Now(), time.Now(), 1,
 	).Scan(&id)
-
 	return id, err
 }
 
-func (r *userRepository) GetUserByID(ctx context.Context, id int) (u *User, err error) {
-	err = r.db.QueryRow(
+// GetUserByID Получить пользователя по ID
+func (r *userRepository) GetUserByID(ctx context.Context, id int) (*User, error) {
+	var user User
+	err := r.db.QueryRow(
 		ctx,
-		`SELECT id, name, surname, role, created_at, updated_at, version FROM users WHERE id = $1`,
+		`SELECT id, name, surname, role, created_at, updated_at, version FROM users WHERE id=$1`,
 		id,
-	).Scan(&u.ID, &u.Name, &u.Surname, &u.Role, &u.CreatedAt, &u.UpdatedAt, &u.Version)
-
-	return u, err
+	).Scan(&user.ID, &user.Name, &user.Surname, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.Version)
+	return &user, err
 }
 
-func (r *userRepository) UpdateUser(ctx context.Context, user *User) (*User, error) {
-	//TODO implement me
-	panic("implement me")
+// GetAllUsers Получить всех пользователей
+func (r *userRepository) GetAllUsers(ctx context.Context) ([]User, error) {
+	rows, err := r.db.Query(ctx, `SELECT id, name, surname, role, created_at, updated_at, version FROM users`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		if err := rows.Scan(&user.ID, &user.Name, &user.Surname, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.Version); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
 }
 
-func (r *userRepository) DeleteUser(ctx context.Context, id int) (int, error) {
-	//TODO implement me
-	panic("implement me")
+// UpdateUser Обновить пользователя
+func (r *userRepository) UpdateUser(ctx context.Context, user *User) error {
+	_, err := r.db.Exec(
+		ctx,
+		`UPDATE users SET name=$1, surname=$2, role=$3, updated_at=$4 WHERE id=$5`,
+		user.Name, user.Surname, user.Role, time.Now(), user.ID,
+	)
+	return err
 }
 
-func NewUserRepository(db *pgxpool.Pool) UserRepository {
-	return &userRepository{db: db}
+// DeleteUser Удалить пользователя
+func (r *userRepository) DeleteUser(ctx context.Context, id int) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM users WHERE id=$1`, id)
+	return err
 }

@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/joho/godotenv"
+	"github.com/olzzhas/edunite-server/user_service/internal/config"
 	"github.com/olzzhas/edunite-server/user_service/internal/database"
 	"github.com/olzzhas/edunite-server/user_service/internal/user"
 	"github.com/olzzhas/edunite-server/user_service/pb"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -13,32 +12,33 @@ import (
 )
 
 func main() {
-	// Загрузка .env файла
-	err := godotenv.Load()
+	// Загружаем конфигурацию
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	// Подключение к базе данных
-	db := database.ConnectDB()
+	// Подключаемся к базе данных
+	db := database.ConnectDB(cfg)
 	defer db.Close()
 
-	repo := database.NewUserRepository(db)
-	userService := user.NewUserService(repo)
-	// Создание gRPC сервера
+	// Запуск gRPC-сервера
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
+	userService := user.NewUserService(database.NewUserRepository(db))
 	pb.RegisterUserServiceServer(grpcServer, userService)
 
+	// Включение рефлексии для дебага
 	reflection.Register(grpcServer)
 
-	log.Println("Server is running on port :50051")
+	log.Println("User service is running on port 50051")
 
+	// Блокируем основной поток, пока сервер не завершится
 	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Fatalf("Failed to serve: %v", err)
 	}
 }

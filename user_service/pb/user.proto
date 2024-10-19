@@ -20,6 +20,12 @@ service UserService {
     };
   }
 
+  rpc GetAllUsers(EmptyRequest) returns (UsersResponse) {
+    option (google.api.http) = {
+      get: "/v1/users"
+    };
+  }
+
   rpc UpdateUser(UpdateUserRequest) returns (UserResponse) {
     option (google.api.http) = {
       put: "/v1/users/{id}"
@@ -64,5 +70,11 @@ message UserResponse {
   string updated_at = 6;
   int32 version = 7;
 }
+
+message UsersResponse {
+  repeated UserResponse users = 1;
+}
+
+message EmptyRequest {}
 
 message EmptyResponse {}
