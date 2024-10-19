@@ -2,9 +2,10 @@ package user
 
 import (
 	"context"
+	"github.com/olzzhas/edunite-server/user_service/internal/database"
+	"github.com/olzzhas/edunite-server/user_service/pb"
+
 	"time"
-	"user_service/internal/database"
-	"user_service/user_service/pb"
 )
 
 type ServiceServer struct {

@@ -2,13 +2,14 @@ package main
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/olzzhas/edunite-server/user_service/internal/database"
+	"github.com/olzzhas/edunite-server/user_service/internal/user"
+	"github.com/olzzhas/edunite-server/user_service/pb"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"user_service/internal/database"
-	"user_service/internal/user"
-	"user_service/user_service/pb"
 )
 
 func main() {

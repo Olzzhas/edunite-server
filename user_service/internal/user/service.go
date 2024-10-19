@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
+	"github.com/olzzhas/edunite-server/user_service/internal/database"
+	"github.com/olzzhas/edunite-server/user_service/pb"
 	"time"
-	"user_service/internal/database"
-	"user_service/user_service/pb"
 )
 
 type Service struct {
@@ -41,15 +41,15 @@ func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*p
 
 func (s *Service) GetUser(ctx context.Context, request *pb.GetUserRequest) (*pb.UserResponse, error) {
 	//TODO implement me
-	panic("implement me")
+	return nil, nil
 }
 
 func (s *Service) UpdateUser(ctx context.Context, request *pb.UpdateUserRequest) (*pb.UserResponse, error) {
 	//TODO implement me
-	panic("implement me")
+	return nil, nil
 }
 
 func (s *Service) DeleteUser(ctx context.Context, request *pb.DeleteUserRequest) (*pb.EmptyResponse, error) {
 	//TODO implement me
-	panic("implement me")
+	return nil, nil
 }
