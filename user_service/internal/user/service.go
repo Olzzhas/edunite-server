@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/olzzhas/edunite-server/user_service/internal/database"
 	"github.com/olzzhas/edunite-server/user_service/pb"
+	"time"
 )
 
 type Service struct {
@@ -36,8 +37,8 @@ func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*p
 		Surname:    user.Surname,
 		Role:       user.Role,
 		Email:      user.Email,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
+		CreatedAt:  user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  user.UpdatedAt.Format(time.RFC3339),
 		Version:    int32(user.Version),
 	}, nil
 }
@@ -55,8 +56,8 @@ func (s *Service) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User
 		Surname:    user.Surname,
 		Role:       user.Role,
 		Email:      user.Email,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
+		CreatedAt:  user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  user.UpdatedAt.Format(time.RFC3339),
 		Version:    int32(user.Version),
 	}, nil
 }
@@ -76,8 +77,8 @@ func (s *Service) GetAllUsers(ctx context.Context, req *pb.EmptyRequest) (*pb.Us
 			Surname:    user.Surname,
 			Role:       user.Role,
 			Email:      user.Email,
-			CreatedAt:  user.CreatedAt,
-			UpdatedAt:  user.UpdatedAt,
+			CreatedAt:  user.CreatedAt.Format(time.RFC3339),
+			UpdatedAt:  user.UpdatedAt.Format(time.RFC3339),
 			Version:    int32(user.Version),
 		})
 	}
@@ -106,8 +107,8 @@ func (s *Service) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequ
 		Surname:    user.Surname,
 		Role:       user.Role,
 		Email:      user.Email,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
+		CreatedAt:  user.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  user.UpdatedAt.Format(time.RFC3339),
 		Version:    int32(user.Version),
 	}
 

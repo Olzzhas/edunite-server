@@ -9,15 +9,15 @@ import (
 
 // User структура пользователя
 type User struct {
-	ID         int64  `json:"id"`
-	KeycloakID string `json:"keycloak_id"`
-	Name       string `json:"name"`
-	Surname    string `json:"surname"`
-	Email      string `json:"email"`
-	Role       string `json:"role"`
-	CreatedAt  string `json:"created_at"`
-	UpdatedAt  string `json:"updated_at"`
-	Version    int    `json:"version"`
+	ID         int64     `json:"id"`
+	KeycloakID string    `json:"keycloak_id"`
+	Name       string    `json:"name"`
+	Surname    string    `json:"surname"`
+	Email      string    `json:"email"`
+	Role       string    `json:"role"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+	Version    int       `json:"version"`
 }
 
 // UserRepository интерфейс для работы с таблицей users
