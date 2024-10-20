@@ -18,21 +18,27 @@ func NewUserService(repo database.UserRepository) *Service {
 // CreateUser Создать пользователя
 func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
 	user := database.User{
-		ID:      req.GetId(),
-		Name:    req.GetName(),
-		Surname: req.GetSurname(),
-		Email:   req.GetEmail(),
-		Role:    req.GetRole(),
+		ID:         req.GetId(),
+		KeycloakID: req.GetKeycloakID(),
+		Name:       req.GetName(),
+		Surname:    req.GetSurname(),
+		Email:      req.GetEmail(),
+		Role:       req.GetRole(),
 	}
 	err := s.repo.CreateUser(ctx, &user)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.UserResponse{
-		Id:      req.GetId(),
-		Name:    user.Name,
-		Surname: user.Surname,
-		Role:    user.Role,
+		Id:         user.ID,
+		KeycloakID: user.KeycloakID,
+		Name:       user.Name,
+		Surname:    user.Surname,
+		Role:       user.Role,
+		Email:      user.Email,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
+		Version:    int32(user.Version),
 	}, nil
 }
 
@@ -43,14 +49,15 @@ func (s *Service) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User
 		return nil, err
 	}
 	return &pb.UserResponse{
-		Id:        user.ID,
-		Name:      user.Name,
-		Surname:   user.Surname,
-		Role:      user.Role,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		Version:   int32(user.Version),
+		Id:         user.ID,
+		KeycloakID: user.KeycloakID,
+		Name:       user.Name,
+		Surname:    user.Surname,
+		Role:       user.Role,
+		Email:      user.Email,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
+		Version:    int32(user.Version),
 	}, nil
 }
 
@@ -63,14 +70,15 @@ func (s *Service) GetAllUsers(ctx context.Context, req *pb.EmptyRequest) (*pb.Us
 	var pbUsers []*pb.UserResponse
 	for _, user := range users {
 		pbUsers = append(pbUsers, &pb.UserResponse{
-			Id:        user.ID,
-			Name:      user.Name,
-			Surname:   user.Surname,
-			Role:      user.Role,
-			Email:     user.Email,
-			CreatedAt: user.CreatedAt,
-			UpdatedAt: user.UpdatedAt,
-			Version:   int32(user.Version),
+			Id:         user.ID,
+			KeycloakID: user.KeycloakID,
+			Name:       user.Name,
+			Surname:    user.Surname,
+			Role:       user.Role,
+			Email:      user.Email,
+			CreatedAt:  user.CreatedAt,
+			UpdatedAt:  user.UpdatedAt,
+			Version:    int32(user.Version),
 		})
 	}
 	return &pb.UsersResponse{Users: pbUsers}, nil
@@ -92,14 +100,15 @@ func (s *Service) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequ
 	}
 
 	userResponse := &pb.UserResponse{
-		Id:        user.ID,
-		Name:      user.Name,
-		Surname:   user.Surname,
-		Role:      user.Role,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
-		Version:   int32(user.Version),
+		Id:         user.ID,
+		KeycloakID: user.KeycloakID,
+		Name:       user.Name,
+		Surname:    user.Surname,
+		Role:       user.Role,
+		Email:      user.Email,
+		CreatedAt:  user.CreatedAt,
+		UpdatedAt:  user.UpdatedAt,
+		Version:    int32(user.Version),
 	}
 
 	return userResponse, nil

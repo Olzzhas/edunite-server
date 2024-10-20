@@ -43,18 +43,26 @@ service UserService {
       get: "/v1/users/email/{email}"
     };
   }
+
+  rpc GetUserByKeycloakID(GetUserByEmailRequest) returns (UserResponse){
+  }
 }
 
 message GetUserByEmailRequest {
   string email = 1;
 }
 
+message GetUserByKeycloakID {
+  string keycloakID = 1;
+}
+
 message CreateUserRequest {
   int64 id = 1;
-  string name = 2;
-  string surname = 3;
-  string email = 4;
-  string role = 5;
+  string keycloakID = 2;
+  string name = 3;
+  string surname = 4;
+  string email = 5;
+  string role = 6;
 }
 
 message GetUserRequest {
@@ -75,13 +83,14 @@ message DeleteUserRequest {
 
 message UserResponse {
   int64 id = 1;
-  string name = 2;
-  string surname = 3;
-  string email = 4;
-  string role = 5;
-  string created_at = 6;
-  string updated_at = 7;
-  int32 version = 8;
+  string keycloakID = 2;
+  string name = 3;
+  string surname = 4;
+  string email = 5;
+  string role = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  int32 version = 9;
 }
 
 message UsersResponse {
