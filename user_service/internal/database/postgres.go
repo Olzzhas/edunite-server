@@ -11,13 +11,13 @@ import (
 var db *pgxpool.Pool
 
 func ConnectDB(cfg *config.Config) *pgxpool.Pool {
-	dbURL := cfg.DatabaseURL
+	//dbURL := cfg.DatabaseURL
 
 	var pool *pgxpool.Pool
 	var err error
 
 	for i := 0; i < 5; i++ {
-		pool, err = pgxpool.Connect(context.Background(), dbURL)
+		pool, err = pgxpool.Connect(context.Background(), "postgres://olzzhas:Olzhas040404@postgres_user:5432/userdb?sslmode=disable")
 		if err == nil {
 			log.Println("Connected to database successfully.")
 			break

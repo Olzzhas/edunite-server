@@ -1,42 +1,84 @@
-version: '3.8'
-
 services:
-  # User Service
-  user_service:
-    build:
-      context: ./user_service
-      dockerfile: Dockerfile
-    ports:
-      - "50051:50051"
-    environment:
-      DATABASE_URL: postgres://olzzhas:olzzhas@postgres_user:5432/userdb?sslmode=disable
-    depends_on:
-      - postgres_user
-
-  # Gateway
-  gateway:
-    build:
-      context: ./gateway
-      dockerfile: Dockerfile
-      ssh: default  # Включаем SSH forwarding
-    ports:
-      - "8081:8081"
-    environment:
-      USER_SERVICE_URL: "user_service:50051"
-    depends_on:
-      - user_service
-
   # PostgreSQL для User Service
   postgres_user:
-    image: postgres:13
+    image: postgres:14
+    container_name: postgres_user
     environment:
-      POSTGRES_USER: olzzhas
-      POSTGRES_PASSWORD: olzzhas
       POSTGRES_DB: userdb
+      POSTGRES_USER: olzzhas
+      POSTGRES_PASSWORD: Olzhas040404
     ports:
       - "5432:5432"
     volumes:
       - postgres_user_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U olzzhas -d userdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app_network
+
+  flyway:
+    image: flyway/flyway:9.2.1
+    command: -url=jdbc:postgresql://postgres_user:5432/userdb -user=olzzhas -password=Olzhas040404 migrate
+    volumes:
+      - ./migrations/user:/flyway/sql
+    depends_on:
+      - postgres_user
+    networks:
+      - app_network
+
+  # User Service
+  user_service:
+    build:
+      context: ./user_service
+    environment:
+      DATABASE_URL: postgres://olzzhas:Olzhas040404@postgres_user:5432/userdb?sslmode=disable
+    ports:
+      - "50051:50051"
+    depends_on:
+      - postgres_user
+      - flyway
+
+    networks:
+      - app_network
+
+
+  # Keycloak для авторизации
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev --http-enabled=true --http-port=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres_user:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  # API Gateway
+  gateway:
+    build:
+      context: ./gateway
+    environment:
+      USER_SERVICE_URL: "user_service:50051"
+      KEYCLOAK_URL: "http://keycloak:8080"
+    ports:
+      - "8081:8081"
+    depends_on:
+      - user_service
+      - keycloak
+    networks:
+      - app_network
 
 volumes:
   postgres_user_data:
+
+networks:
+  app_network:
+    driver: bridge

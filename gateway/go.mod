@@ -3,7 +3,7 @@ module github.com/olzzhas/edunite-server/gateway
 go 1.22
 
 require (
-	github.com/olzzhas/edunite-server/user_service v0.0.0-20241020125056-e95d8ee0d0a6
+	github.com/olzzhas/edunite-server/user_service v0.0.0-20241020184034-dc59ad51837e
 	google.golang.org/grpc v1.67.1
 )
 

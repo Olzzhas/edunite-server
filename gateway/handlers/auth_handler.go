@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/olzzhas/edunite-server/gateway/clients"
 	"github.com/olzzhas/edunite-server/gateway/models"
@@ -12,42 +13,61 @@ type AuthHandler struct {
 	UserService    *clients.UserClient
 }
 
-func (h *AuthHandler) Register(c *gin.Context) {
+// RegisterHandler обрабатывает регистрацию пользователя
+func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 	var req models.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	// Регистрация в Keycloak
-	userID, err := h.KeycloakClient.RegisterUser(req)
+	// Создание пользователя в Keycloak
+	userID, err := h.KeycloakClient.RegisterUser(req.Username, req.Password, req.Email, req.Name, req.Surname)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Error while registering user: %s", err)})
 		return
 	}
 
-	// Сохранение пользователя в User Service
-	err = h.UserService.CreateUser(userID, req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save user"})
+	// Сохранение данных пользователя в User Service
+	if err := h.UserService.CreateUser(userID, req.Name, req.Surname, req.Email); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save user in database"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully", "user_id": userID})
 }
 
-func (h *AuthHandler) Login(c *gin.Context) {
+// LoginHandler обрабатывает авторизацию пользователя
+func (h *AuthHandler) LoginHandler(c *gin.Context) {
 	var req models.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
+	// Логин через Keycloak
 	token, err := h.KeycloakClient.Login(req.Username, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"access_token": token})
+	c.JSON(http.StatusOK, gin.H{"access_token": token.AccessToken})
+}
+
+// UserInfoHandler обрабатывает запрос информации о пользователе
+func (h *AuthHandler) UserInfoHandler(c *gin.Context) {
+	accessToken := c.GetHeader("Authorization")
+	if accessToken == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
+		return
+	}
+
+	userInfo, err := h.KeycloakClient.GetUserInfo(accessToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, userInfo)
 }

@@ -71,3 +71,36 @@ func (kc *KeycloakClient) ValidateToken(accessToken string) (bool, error) {
 	log.Printf("Token valid: %v", result.Active)
 	return *result.Active, nil
 }
+
+// RegisterUser создает нового пользователя в Keycloak и возвращает его ID
+func (kc *KeycloakClient) RegisterUser(username, password, email, firstName, lastName string) (string, error) {
+	// Получаем административный токен
+	token, err := kc.client.LoginClient(context.Background(), kc.clientID, kc.clientSecret, kc.realm)
+	if err != nil {
+		return "", fmt.Errorf("failed to obtain access token: %w", err)
+	}
+
+	user := gocloak.User{
+		Username:  gocloak.StringP(username),
+		Email:     gocloak.StringP(email),
+		FirstName: gocloak.StringP(firstName),
+		LastName:  gocloak.StringP(lastName),
+		Enabled:   gocloak.BoolP(true),
+	}
+
+	// Создаем пользователя в Keycloak
+	userID, err := kc.client.CreateUser(kc.ctx, token.AccessToken, kc.realm, user)
+	if err != nil {
+		return "", fmt.Errorf("failed to register user in Keycloak: %w", err)
+	}
+	log.Printf("User registered successfully with ID: %s", userID)
+
+	// Устанавливаем пароль для пользователя
+	err = kc.client.SetPassword(kc.ctx, token.AccessToken, userID, kc.realm, password, false)
+	if err != nil {
+		return "", fmt.Errorf("failed to set user password: %w", err)
+	}
+	log.Println("Password set successfully")
+
+	return userID, nil
+}

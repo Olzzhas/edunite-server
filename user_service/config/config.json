@@ -1,6 +1,6 @@
 {
   "database": {
-    "url": "postgres://olzzhas:olzzhas@postgres_user:5432/userdb?sslmode=disable"
+    "url": "postgres://olzzhas:Olzhas040404@postgres_user:5432/userdb?sslmode=disable"
   },
   "server": {
     "port": 50051

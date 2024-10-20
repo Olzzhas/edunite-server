@@ -15,4 +15,4 @@ COPY . .
 
 # Открываем порт и запускаем Gateway
 EXPOSE 8081
-CMD ["go", "run", "./cmd/main.go"]
+CMD ["go", "run", "./main.go"]
