@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package logger;
+
+option go_package = "/pb";
+
+// Сервис для логирования
+service LoggerService {
+  // Метод для сохранения лога
+  rpc LogEvent (LogEventRequest) returns (LogEventResponse);
+}
+
+// Запрос на создание лога
+message LogEventRequest {
+  string keycloak_id = 1;
+  string service_name = 2;
+  string message = 3;
+  string level = 4; // Уровень лога: info, warning, error
+  string timestamp = 5; // Временная метка события
+}
+
+// Ответ на создание лога
+message LogEventResponse {
+  bool success = 1;
+  string message = 2;
+}
