@@ -74,3 +74,19 @@ func (s *Service) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*p
 	}
 	return &pb.EmptyResponse{}, nil
 }
+
+func (s *Service) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequest) (*pb.UserResponse, error) {
+	user, err := s.repo.GetUserByEmail(ctx, req.GetEmail())
+	if err != nil {
+		return nil, err
+	}
+
+	userResponse := &pb.UserResponse{
+		Id:      int64(user.ID),
+		Name:    user.Name,
+		Surname: user.Surname,
+		Role:    user.Role,
+	}
+
+	return userResponse, nil
+}

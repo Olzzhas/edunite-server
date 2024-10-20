@@ -19,6 +19,7 @@ type User struct {
 type UserRepository interface {
 	CreateUser(ctx context.Context, u *User) (int, error)
 	GetUserByID(ctx context.Context, id int) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
 	GetAllUsers(ctx context.Context) ([]User, error)
 	UpdateUser(ctx context.Context, u *User) error
 	DeleteUser(ctx context.Context, id int) error
@@ -51,6 +52,17 @@ func (r *userRepository) GetUserByID(ctx context.Context, id int) (*User, error)
 		ctx,
 		`SELECT id, name, surname, role, created_at, updated_at, version FROM users WHERE id=$1`,
 		id,
+	).Scan(&user.ID, &user.Name, &user.Surname, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.Version)
+	return &user, err
+}
+
+// GetUserByEmail Получить пользователя по Email
+func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	var user User
+	err := r.db.QueryRow(
+		ctx,
+		`SELECT id, name, surname, role, created_at, updated_at, version FROM users WHERE email=$1`,
+		email,
 	).Scan(&user.ID, &user.Name, &user.Surname, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.Version)
 	return &user, err
 }

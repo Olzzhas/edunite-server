@@ -38,6 +38,11 @@ func (h *Handler) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*p
 	return h.service.DeleteUser(ctx, req)
 }
 
+// GetUserByEmail Обработчик для получения пользователя по Email
+func (h *Handler) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequest) (*pb.UserResponse, error) {
+	return h.service.GetUserByEmail(ctx, req)
+}
+
 func ValidateToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Здесь используем публичный ключ Keycloak для проверки токена
