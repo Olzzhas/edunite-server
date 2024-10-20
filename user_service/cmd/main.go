@@ -13,10 +13,7 @@ import (
 
 func main() {
 	// Загружаем конфигурацию
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
-	}
+	cfg := config.LoadConfig()
 
 	// Подключаемся к базе данных
 	db := database.ConnectDB(cfg)

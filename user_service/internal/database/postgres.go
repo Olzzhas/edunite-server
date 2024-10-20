@@ -11,7 +11,7 @@ import (
 var db *pgxpool.Pool
 
 func ConnectDB(cfg *config.Config) *pgxpool.Pool {
-	dbURL := cfg.Database.URL
+	dbURL := cfg.DatabaseURL
 
 	var pool *pgxpool.Pool
 	var err error

@@ -22,3 +22,5 @@ proto:
 # Удаление сгенерированных файлов
 clean:
 	rm -f $(PROTO_OUT)/*.go
+
+# evans -r -p 50051 --host localhost

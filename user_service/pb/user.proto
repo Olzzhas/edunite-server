@@ -38,6 +38,15 @@ service UserService {
       delete: "/v1/users/{id}"
     };
   }
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      get: "/v1/users/email/{email}"
+    };
+  }
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
 }
 
 message CreateUserRequest {
