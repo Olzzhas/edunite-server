@@ -5,7 +5,6 @@ import (
 	"flag"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/olzzhas/edunite-server/user_service/pb"
-
 	"google.golang.org/grpc"
 	"log"
 	"net/http"

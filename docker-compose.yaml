@@ -44,6 +44,35 @@ services:
     networks:
       - app_network
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app_network
+
+  mongodb:
+    image: mongo:5
+    ports:
+      - "27017:27017"
+    networks:
+      - app_network
+
+  logger_service:
+    build:
+      context: ./logger_service
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017"
+      RABBITMQ_URI: "amqp://guest:guest@rabbitmq:5672/"
+    depends_on:
+      - rabbitmq
+      - mongodb
+    networks:
+      - app_network
 
   # Keycloak для авторизации
   keycloak:
@@ -56,28 +85,29 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgres_user:
-        condition: service_healthy
+      - postgres_user
     networks:
       - app_network
 
-  # API Gateway
   gateway:
     build:
       context: ./gateway
     environment:
       USER_SERVICE_URL: "user_service:50051"
       KEYCLOAK_URL: "http://keycloak:8080"
+      RABBITMQ_URI: "amqp://guest:guest@rabbitmq:5672/"
     ports:
       - "8081:8081"
     depends_on:
       - user_service
       - keycloak
+      - logger_service
     networks:
       - app_network
 
 volumes:
   postgres_user_data:
+  keycloak_data:
 
 networks:
   app_network:
