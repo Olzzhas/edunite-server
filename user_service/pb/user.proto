@@ -50,9 +50,11 @@ message GetUserByEmailRequest {
 }
 
 message CreateUserRequest {
-  string name = 1;
-  string surname = 2;
-  string role = 3;
+  int64 id = 1;
+  string name = 2;
+  string surname = 3;
+  string email = 4;
+  string role = 5;
 }
 
 message GetUserRequest {
@@ -64,6 +66,7 @@ message UpdateUserRequest {
   string name = 2;
   string surname = 3;
   string role = 4;
+  string email = 5;
 }
 
 message DeleteUserRequest {
@@ -74,10 +77,11 @@ message UserResponse {
   int64 id = 1;
   string name = 2;
   string surname = 3;
-  string role = 4;
-  string created_at = 5;
-  string updated_at = 6;
-  int32 version = 7;
+  string email = 4;
+  string role = 5;
+  string created_at = 6;
+  string updated_at = 7;
+  int32 version = 8;
 }
 
 message UsersResponse {

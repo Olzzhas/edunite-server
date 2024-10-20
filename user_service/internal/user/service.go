@@ -18,16 +18,18 @@ func NewUserService(repo database.UserRepository) *Service {
 // CreateUser Создать пользователя
 func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.UserResponse, error) {
 	user := database.User{
+		ID:      req.GetId(),
 		Name:    req.GetName(),
 		Surname: req.GetSurname(),
+		Email:   req.GetEmail(),
 		Role:    req.GetRole(),
 	}
-	id, err := s.repo.CreateUser(ctx, &user)
+	err := s.repo.CreateUser(ctx, &user)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.UserResponse{
-		Id:      int64(id),
+		Id:      req.GetId(),
 		Name:    user.Name,
 		Surname: user.Surname,
 		Role:    user.Role,
@@ -36,15 +38,19 @@ func (s *Service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*p
 
 // GetUser Получить пользователя по ID
 func (s *Service) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.UserResponse, error) {
-	user, err := s.repo.GetUserByID(ctx, int(req.GetId()))
+	user, err := s.repo.GetUserByID(ctx, req.GetId())
 	if err != nil {
 		return nil, err
 	}
 	return &pb.UserResponse{
-		Id:      int64(user.ID),
-		Name:    user.Name,
-		Surname: user.Surname,
-		Role:    user.Role,
+		Id:        user.ID,
+		Name:      user.Name,
+		Surname:   user.Surname,
+		Role:      user.Role,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Version:   int32(user.Version),
 	}, nil
 }
 
@@ -57,10 +63,14 @@ func (s *Service) GetAllUsers(ctx context.Context, req *pb.EmptyRequest) (*pb.Us
 	var pbUsers []*pb.UserResponse
 	for _, user := range users {
 		pbUsers = append(pbUsers, &pb.UserResponse{
-			Id:      int64(user.ID),
-			Name:    user.Name,
-			Surname: user.Surname,
-			Role:    user.Role,
+			Id:        user.ID,
+			Name:      user.Name,
+			Surname:   user.Surname,
+			Role:      user.Role,
+			Email:     user.Email,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+			Version:   int32(user.Version),
 		})
 	}
 	return &pb.UsersResponse{Users: pbUsers}, nil
@@ -68,7 +78,7 @@ func (s *Service) GetAllUsers(ctx context.Context, req *pb.EmptyRequest) (*pb.Us
 
 // DeleteUser Удалить пользователя
 func (s *Service) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.EmptyResponse, error) {
-	err := s.repo.DeleteUser(ctx, int(req.GetId()))
+	err := s.repo.DeleteUser(ctx, req.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -82,10 +92,14 @@ func (s *Service) GetUserByEmail(ctx context.Context, req *pb.GetUserByEmailRequ
 	}
 
 	userResponse := &pb.UserResponse{
-		Id:      int64(user.ID),
-		Name:    user.Name,
-		Surname: user.Surname,
-		Role:    user.Role,
+		Id:        user.ID,
+		Name:      user.Name,
+		Surname:   user.Surname,
+		Role:      user.Role,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Version:   int32(user.Version),
 	}
 
 	return userResponse, nil
