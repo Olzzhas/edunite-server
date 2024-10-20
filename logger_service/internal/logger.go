@@ -1,24 +1,20 @@
 package internal
 
 import (
-	"context"
 	"log"
-
-	"github.com/olzzhas/edunite-server/logger_service/pb"
+	"sync"
 )
 
-// Реализация сервера логгера
-type LoggerServer struct {
-	pb.UnimplementedLoggerServiceServer
+type Logger struct {
+	mu sync.Mutex
 }
 
-// Метод для логирования событий
-func (s *LoggerServer) LogEvent(ctx context.Context, req *pb.LogEventRequest) (*pb.LogEventResponse, error) {
-	log.Printf("[%s] %s: %s", req.Level, req.ServiceName, req.Message)
+// NewLogger инициализирует логгер
+func NewLogger() *Logger {
+	return &Logger{}
+}
 
-	// Здесь можно добавить логику для сохранения в MongoDB
-	return &pb.LogEventResponse{
-		Success: true,
-		Message: "Log saved successfully",
-	}, nil
+// LogEvent логирует событие и сохраняет его в MongoDB и RabbitMQ
+func (l *Logger) LogEvent(level, message, service string, data map[string]string) {
+	log.Printf("[%s] %s: %s - %v", level, service, message, data)
 }

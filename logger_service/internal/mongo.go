@@ -7,27 +7,20 @@ import (
 	"log"
 )
 
-type MongoClient struct {
-	client *mongo.Client
-	db     *mongo.Database
-}
-
-func NewMongoClient(uri string) *MongoClient {
+func ConnectMongoDB(uri string) (*mongo.Database, error) {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri))
 	if err != nil {
-		log.Fatalf("Failed to connect to MongoDB: %v", err)
+		return nil, err
 	}
-	return &MongoClient{
-		client: client,
-		db:     client.Database("logs"),
-	}
+	return client.Database("logs"), nil
 }
 
-func (m *MongoClient) SaveLog(logEntry map[string]interface{}) {
-	collection := m.db.Collection("logs")
-	_, err := collection.InsertOne(context.Background(), logEntry)
+func SaveLogToMongo(db *mongo.Database, logData interface{}) error {
+	collection := db.Collection("logs")
+	_, err := collection.InsertOne(context.Background(), logData)
 	if err != nil {
-		log.Printf("Failed to save log: %v", err)
+		log.Printf("Failed to save log to MongoDB: %v", err)
+		return err
 	}
-	log.Println("Log saved successfully")
+	return nil
 }

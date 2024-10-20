@@ -25,10 +25,7 @@ const (
 // LoggerServiceClient is the client API for LoggerService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// Сервис для логирования
 type LoggerServiceClient interface {
-	// Метод для сохранения лога
 	LogEvent(ctx context.Context, in *LogEventRequest, opts ...grpc.CallOption) (*LogEventResponse, error)
 }
 
@@ -53,10 +50,7 @@ func (c *loggerServiceClient) LogEvent(ctx context.Context, in *LogEventRequest,
 // LoggerServiceServer is the server API for LoggerService service.
 // All implementations must embed UnimplementedLoggerServiceServer
 // for forward compatibility.
-//
-// Сервис для логирования
 type LoggerServiceServer interface {
-	// Метод для сохранения лога
 	LogEvent(context.Context, *LogEventRequest) (*LogEventResponse, error)
 	mustEmbedUnimplementedLoggerServiceServer()
 }

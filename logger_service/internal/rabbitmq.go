@@ -2,51 +2,41 @@ package internal
 
 import (
 	"encoding/json"
-	"log"
-
+	"fmt"
 	"github.com/streadway/amqp"
 )
 
-type RabbitMQ struct {
-	conn *amqp.Connection
-}
-
-func NewRabbitMQ(uri string) *RabbitMQ {
+func ConnectRabbitMQ(uri string) (*amqp.Connection, error) {
 	conn, err := amqp.Dial(uri)
 	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
 	}
-	return &RabbitMQ{conn: conn}
+	return conn, nil
 }
 
-func (r *RabbitMQ) ListenAndSaveLogs(mongoClient *MongoClient) error {
-	ch, err := r.conn.Channel()
+func PublishToRabbitMQ(conn *amqp.Connection, logData interface{}) error {
+	ch, err := conn.Channel()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to open RabbitMQ channel: %w", err)
 	}
 	defer ch.Close()
 
-	q, err := ch.QueueDeclare(
-		"logs", true, false, false, false, nil,
-	)
+	body, err := json.Marshal(logData)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to marshal log message: %w", err)
 	}
 
-	msgs, err := ch.Consume(
-		q.Name, "", true, false, false, false, nil,
-	)
+	q, err := ch.QueueDeclare("logs", true, false, false, false, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to declare RabbitMQ queue: %w", err)
 	}
 
-	for msg := range msgs {
-		var logEntry map[string]interface{}
-		if err := json.Unmarshal(msg.Body, &logEntry); err != nil {
-			log.Printf("Failed to unmarshal log: %v", err)
-			continue
-		}
-		mongoClient.SaveLog(logEntry)
+	err = ch.Publish("", q.Name, false, false, amqp.Publishing{
+		ContentType: "application/json",
+		Body:        body,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to publish log message: %w", err)
 	}
 	return nil
 }
