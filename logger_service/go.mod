@@ -1,6 +1,6 @@
 module github.com/olzzhas/edunite-server/logger_service
 
-go 1.21
+go 1.23
 
 require (
 	github.com/streadway/amqp v1.1.0
