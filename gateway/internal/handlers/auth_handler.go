@@ -1,30 +1,37 @@
 package handlers
 
 import (
-	"github.com/olzzhas/edunite-server/gateway/internal/clients"
-	"net/http"
-
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/olzzhas/edunite-server/gateway/clients"
+	"log"
+	"net/http"
+	"strings"
 )
 
-// Предположим, что у нас есть глобальная переменная для клиентов
-var keycloakClient = clients.NewKeycloakClient("http://localhost:8080")
+type AuthHandler struct {
+	keycloakClient *clients.KeycloakClient
+}
 
-func LoginHandler(c *gin.Context) {
-	var credentials struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-	if err := c.ShouldBindJSON(&credentials); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+func NewAuthHandler(keycloakClient *clients.KeycloakClient) *AuthHandler {
+	return &AuthHandler{keycloakClient: keycloakClient}
+}
+func (h *AuthHandler) UserInfoHandler(c *gin.Context) {
+	accessToken := c.GetHeader("Authorization")
+	if accessToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing access token"})
 		return
 	}
 
-	token, err := keycloakClient.Login(credentials.Email, credentials.Password)
+	// Удалить префикс "Bearer "
+	accessToken = strings.TrimPrefix(accessToken, "Bearer ")
+
+	userInfo, err := h.keycloakClient.GetUserInfo(accessToken)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
+		log.Printf("Failed to get user info: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to get user info: %v", err)})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"access_token": token})
+	c.JSON(http.StatusOK, userInfo)
 }

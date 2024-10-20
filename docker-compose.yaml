@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # User Service
+  user_service:
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      DATABASE_URL: postgres://olzzhas:olzzhas@postgres_user:5432/userdb?sslmode=disable
+    depends_on:
+      - postgres_user
+
+  # Gateway
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+      ssh: default  # Включаем SSH forwarding
+    ports:
+      - "8081:8081"
+    environment:
+      USER_SERVICE_URL: "user_service:50051"
+    depends_on:
+      - user_service
+
+  # PostgreSQL для User Service
+  postgres_user:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: olzzhas
+      POSTGRES_PASSWORD: olzzhas
+      POSTGRES_DB: userdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_user_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_user_data:

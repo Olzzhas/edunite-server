@@ -1,32 +1,31 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/olzzhas/edunite-server/gateway/internal/clients"
+	"encoding/json"
+	"github.com/olzzhas/edunite-server/gateway/clients"
 	"net/http"
 )
 
-var userClient *clients.UserClient // Предположим, что клиент уже инициализирован
+type UserHandler struct {
+	userClient *clients.UserClient
+}
 
-func RegisterHandler(c *gin.Context) {
-	var user struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Name     string `json:"name"`
-	}
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+func NewUserHandler(userClient *clients.UserClient) *UserHandler {
+	return &UserHandler{userClient: userClient}
+}
+
+func (h *UserHandler) GetUserByEmailHandler(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
 		return
 	}
 
-	// Логика регистрации может отправлять запрос в User Service
-	// Здесь можно добавить проверку на существование пользователя
-	_, err := userClient.GetUserByEmail(user.Email)
-	if err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
+	user, err := h.userClient.GetUserByEmail(email)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Добавьте вызов регистрации через gRPC, если необходимо
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+	json.NewEncoder(w).Encode(user)
 }
