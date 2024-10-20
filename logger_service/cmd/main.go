@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/olzzhas/edunite-server/logger_service/internal"
 	"github.com/olzzhas/edunite-server/logger_service/pb"
 	"google.golang.org/grpc"
 )
@@ -15,7 +16,9 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterLoggerServiceServer(grpcServer, &LoggerServer{})
+
+	// Регистрируем сервер логгера
+	pb.RegisterLoggerServiceServer(grpcServer, &internal.LoggerServer{})
 
 	log.Println("Logger Service is running on port 50052...")
 	if err := grpcServer.Serve(lis); err != nil {
