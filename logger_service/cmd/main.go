@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/streadway/amqp"
 	"log"
 	"net"
@@ -37,11 +38,16 @@ func (s *LoggerServer) LogEvent(ctx context.Context, req *pb.LogEventRequest) (*
 		"datetime": time.Now().UTC(),
 	}
 
+	fmt.Println(logData)
+
 	if err := internal.SaveLogToMongo(s.mongoDB, logData); err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
 	if err := internal.PublishToRabbitMQ(s.rabbitConn, logData); err != nil {
+		fmt.Println(err)
+		fmt.Println(err)
 		return nil, err
 	}
 
