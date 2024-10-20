@@ -18,10 +18,15 @@ type UserServiceConfig struct {
 	Target string
 }
 
+type LoggerServiceConfig struct {
+	Target string
+}
+
 type Config struct {
 	Services struct {
-		Keycloak    KeycloakConfig
-		UserService UserServiceConfig
+		Keycloak      KeycloakConfig
+		UserService   UserServiceConfig
+		LoggerService LoggerServiceConfig
 	}
 }
 
@@ -35,8 +40,9 @@ func LoadConfig() *Config {
 
 	return &Config{
 		Services: struct {
-			Keycloak    KeycloakConfig
-			UserService UserServiceConfig
+			Keycloak      KeycloakConfig
+			UserService   UserServiceConfig
+			LoggerService LoggerServiceConfig
 		}{
 			Keycloak: KeycloakConfig{
 				BaseURL:      os.Getenv("KEYCLOAK_URL"),
@@ -46,6 +52,9 @@ func LoadConfig() *Config {
 			},
 			UserService: UserServiceConfig{
 				Target: os.Getenv("USER_SERVICE_URL"),
+			},
+			LoggerService: LoggerServiceConfig{
+				Target: os.Getenv("LOGGER_SERVICE_URL"),
 			},
 		},
 	}

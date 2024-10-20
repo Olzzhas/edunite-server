@@ -11,6 +11,7 @@ import (
 type AuthHandler struct {
 	KeycloakClient *clients.KeycloakClient
 	UserService    *clients.UserClient
+	LoggerService  *clients.LoggerClient
 }
 
 // RegisterHandler обрабатывает регистрацию пользователя
@@ -27,6 +28,8 @@ func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Error while registering user: %s", err)})
 		return
 	}
+
+	_ = h.LoggerService.WriteInfoLog(userID, "keycloak", "user created successfully")
 
 	// Сохранение данных пользователя в User Service
 	if err := h.UserService.CreateUser(userID, req.Name, req.Surname, req.Email); err != nil {

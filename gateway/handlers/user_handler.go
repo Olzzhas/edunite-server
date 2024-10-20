@@ -8,7 +8,8 @@ import (
 )
 
 type UserHandler struct {
-	UserService *clients.UserClient
+	UserService   *clients.UserClient
+	LoggerService *clients.LoggerClient
 }
 
 func (h *UserHandler) GetAllUsers(c *gin.Context) {

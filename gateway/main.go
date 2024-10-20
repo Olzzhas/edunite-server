@@ -28,18 +28,26 @@ func main() {
 		log.Fatalf("Failed to connect to User Service: %v", err)
 	}
 	defer conn.Close()
-
 	// Создаем клиента User Service
 	userServiceClient := clients.NewUserClient(conn)
+
+	conn, err = grpc.Dial(cfg.Services.LoggerService.Target, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Failed to connect to Logger Service: %v", err)
+	}
+
+	loggerServiceClient := clients.NewLoggerClient(conn)
 
 	// Инициализируем обработчик аутентификации
 	authHandler := &handlers.AuthHandler{
 		KeycloakClient: keycloakClient,
 		UserService:    userServiceClient,
+		LoggerService:  loggerServiceClient,
 	}
 
 	userHandler := &handlers.UserHandler{
-		UserService: userServiceClient,
+		UserService:   userServiceClient,
+		LoggerService: loggerServiceClient,
 	}
 
 	// Настраиваем маршруты
