@@ -95,7 +95,7 @@ func (r *userRepository) GetAllUsers(ctx context.Context) ([]User, error) {
 	var users []User
 	for rows.Next() {
 		var user User
-		if err := rows.Scan(&user.ID, &user.KeycloakID, &user.Name, &user.Surname, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt); err != nil {
+		if err := rows.Scan(&user.ID, &user.KeycloakID, &user.Name, &user.Surname, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.Version); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
