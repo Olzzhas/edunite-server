@@ -61,6 +61,10 @@ github.com/olzzhas/edunite-server/user_service v0.0.0-20241020182025-b2eef69555a
 github.com/olzzhas/edunite-server/user_service v0.0.0-20241020182025-b2eef69555a5/go.mod h1:qCf8x3UBenNxR181qSd30WdcDohWWMNwzfyxcGlXFF4=
 github.com/olzzhas/edunite-server/user_service v0.0.0-20241020184034-dc59ad51837e h1:uBF7sjNTsLRQ2p440RuDDk5Z6Wo7nklflnwx6Hceads=
 github.com/olzzhas/edunite-server/user_service v0.0.0-20241020184034-dc59ad51837e/go.mod h1:qCf8x3UBenNxR181qSd30WdcDohWWMNwzfyxcGlXFF4=
+github.com/olzzhas/edunite-server/user_service v0.0.0-20241020205300-a0b6dfff60bb h1:a26K7Ta7UP6iavwSSk6jgQV+1hC2O6PPRFoQahBe1Mw=
+github.com/olzzhas/edunite-server/user_service v0.0.0-20241020205300-a0b6dfff60bb/go.mod h1:qCf8x3UBenNxR181qSd30WdcDohWWMNwzfyxcGlXFF4=
+github.com/olzzhas/edunite-server/user_service v0.0.0-20241020210110-d58efe24ed71 h1:W1ltBv8qwnEzFdAh9TVgVKOMGBsvXJTtlN0U7a27UnM=
+github.com/olzzhas/edunite-server/user_service v0.0.0-20241020210110-d58efe24ed71/go.mod h1:qCf8x3UBenNxR181qSd30WdcDohWWMNwzfyxcGlXFF4=
 github.com/opentracing/opentracing-go v1.2.0 h1:uEJPy/1a5RIPAJ0Ov+OIO8OxWu77jEv+1B0VhjKrZUs=
 github.com/opentracing/opentracing-go v1.2.0/go.mod h1:GxEUsuufX4nBwe+T+Wl9TAgYrxe9dPLANfrWvHYVTgc=
 github.com/pelletier/go-toml/v2 v2.2.2 h1:aYUidT7k73Pcl9nb2gScu7NSrKCSHIDE89b3+6Wq+LM=

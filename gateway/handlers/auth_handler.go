@@ -54,20 +54,3 @@ func (h *AuthHandler) LoginHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"access_token": token.AccessToken})
 }
-
-// UserInfoHandler обрабатывает запрос информации о пользователе
-func (h *AuthHandler) UserInfoHandler(c *gin.Context) {
-	accessToken := c.GetHeader("Authorization")
-	if accessToken == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is missing"})
-		return
-	}
-
-	userInfo, err := h.KeycloakClient.GetUserInfo(accessToken)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		return
-	}
-
-	c.JSON(http.StatusOK, userInfo)
-}

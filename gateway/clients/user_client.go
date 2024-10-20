@@ -36,3 +36,12 @@ func (uc *UserClient) CreateUser(keycloakID, name, surname, email string) error 
 	log.Printf("User saved in User Service with Keycloak ID: %s", keycloakID)
 	return nil
 }
+
+func (uc *UserClient) GetAllUsers() (*pb.UsersResponse, error) {
+	users, err := uc.client.GetAllUsers(context.Background(), &pb.EmptyRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

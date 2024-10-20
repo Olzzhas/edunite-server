@@ -38,8 +38,13 @@ func main() {
 		UserService:    userServiceClient,
 	}
 
+	userHandler := &handlers.UserHandler{
+		UserService: userServiceClient,
+	}
+
 	// Настраиваем маршруты
 	routes.SetupAuthRoutes(r, authHandler)
+	routes.SetupUserRoutes(r, keycloakClient, userHandler)
 
 	// Запускаем сервер
 	if err := r.Run(":8081"); err != nil {
