@@ -29,13 +29,22 @@ func (h *AuthHandler) RegisterHandler(c *gin.Context) {
 		return
 	}
 
-	_ = h.LoggerService.WriteInfoLog(userID, "keycloak", "user created successfully")
+	logData := map[string]string{
+		"user_keycloak_id": userID,
+		"user_name":        req.Name,
+		"user_surname":     req.Surname,
+		"user_email":       req.Email,
+	}
+
+	_ = h.LoggerService.WriteLog("INFO", "user created in keycloak successfully", "keycloak", logData)
 
 	// Сохранение данных пользователя в User Service
 	if err := h.UserService.CreateUser(userID, req.Name, req.Surname, req.Email); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save user in database"})
 		return
 	}
+
+	_ = h.LoggerService.WriteLog("INFO", "user created in user database successfully", "user", logData)
 
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully", "user_id": userID})
 }

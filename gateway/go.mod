@@ -8,7 +8,7 @@ require (
 	github.com/Nerzal/gocloak/v13 v13.9.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
-	github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020215616-b2eed6a83922
+	github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020224721-791489f7ef05
 	github.com/olzzhas/edunite-server/user_service v0.0.0-20241020210110-d58efe24ed71
 	google.golang.org/grpc v1.67.1
 )

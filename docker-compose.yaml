@@ -52,6 +52,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
 
@@ -59,8 +64,16 @@ services:
     image: mongo:5
     ports:
       - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 })" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - app_network
+
 
   logger_service:
     build:
@@ -69,8 +82,10 @@ services:
       MONGO_URI: "mongodb://mongodb:27017"
       RABBITMQ_URI: "amqp://guest:guest@rabbitmq:5672/"
     depends_on:
-      - rabbitmq
-      - mongodb
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
     networks:
       - app_network
 
@@ -99,15 +114,17 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - user_service
-      - keycloak
-      - logger_service
+      user_service:
+        condition: service_started
+      keycloak:
+        condition: service_started
     networks:
       - app_network
 
 volumes:
   postgres_user_data:
   keycloak_data:
+  mongo_data:
 
 networks:
   app_network:

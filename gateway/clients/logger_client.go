@@ -2,9 +2,9 @@ package clients
 
 import (
 	"context"
+	"fmt"
 	"github.com/olzzhas/edunite-server/logger_service/pb"
 	"google.golang.org/grpc"
-	"time"
 )
 
 // LoggerClient представляет клиент для взаимодействия с Logger Service через gRPC
@@ -19,15 +19,15 @@ func NewLoggerClient(conn *grpc.ClientConn) *LoggerClient {
 	}
 }
 
-func (uc *LoggerClient) WriteInfoLog(keycloakId, serviceName, message string) error {
-	_, err := uc.client.LogEvent(context.Background(), &pb.LogEventRequest{
-		KeycloakId:  keycloakId,
-		ServiceName: serviceName,
+func (uc *LoggerClient) WriteLog(level, message, serviceName string, data map[string]string) error {
+	response, err := uc.client.LogEvent(context.Background(), &pb.LogEventRequest{
+		Level:       level,
 		Message:     message,
-		Timestamp:   time.Now().Format(time.RFC3339),
-		Level:       "INFO",
+		ServiceName: serviceName,
+		Data:        data,
 	})
 	if err != nil {
+		fmt.Println(fmt.Sprintf("error is occured while writing log. response form logger service:%v", response))
 		return err
 	}
 

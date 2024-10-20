@@ -60,6 +60,10 @@ github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9G
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020215616-b2eed6a83922 h1:hZNwIgFLI1OuClyqq1LRb8b18r28Gum+XVFB/Z42Vyg=
 github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020215616-b2eed6a83922/go.mod h1:9GnoHqI9tXLA42uBZVxNUQeUV0rcr29Cpat+GypK+WY=
+github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020223321-c3d302e603e0 h1:aJd25swBEexl00bRqc6Xci0hiSwrFAXJXjVbXRWTJhM=
+github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020223321-c3d302e603e0/go.mod h1:cHXAJDLroLsFMIdE8w4JD/agKqMLB1oedAXzGf6LSjM=
+github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020224721-791489f7ef05 h1:udrHvUMzXWAEQBN6ZXLemqE1CM/dr0jTfMcGG+szT0g=
+github.com/olzzhas/edunite-server/logger_service v0.0.0-20241020224721-791489f7ef05/go.mod h1:cHXAJDLroLsFMIdE8w4JD/agKqMLB1oedAXzGf6LSjM=
 github.com/olzzhas/edunite-server/user_service v0.0.0-20241020210110-d58efe24ed71 h1:W1ltBv8qwnEzFdAh9TVgVKOMGBsvXJTtlN0U7a27UnM=
 github.com/olzzhas/edunite-server/user_service v0.0.0-20241020210110-d58efe24ed71/go.mod h1:qCf8x3UBenNxR181qSd30WdcDohWWMNwzfyxcGlXFF4=
 github.com/opentracing/opentracing-go v1.2.0 h1:uEJPy/1a5RIPAJ0Ov+OIO8OxWu77jEv+1B0VhjKrZUs=
