@@ -1,29 +1,29 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
-
 	"github.com/olzzhas/edunite-server/gateway/clients"
+	"github.com/olzzhas/edunite-server/gateway/config"
 	"github.com/olzzhas/edunite-server/gateway/handlers"
 	"github.com/olzzhas/edunite-server/gateway/routes"
+	"google.golang.org/grpc"
+	"log"
 )
 
 func main() {
 	r := gin.Default()
+	cfg := config.LoadConfig()
 
 	// Создаем клиента Keycloak
 	keycloakClient := clients.NewKeycloakClient(
-		"http://keycloak:8080",             // URL Keycloak
-		"edunite",                          // Realm
-		"auth",                             // Client ID
-		"GRV1KxE8BYV45WVxP7s4d4WCm7cKZVOm", // Client Secret
+		cfg.Services.Keycloak.BaseURL,      // URL Keycloak
+		cfg.Services.Keycloak.Realm,        // Realm
+		cfg.Services.Keycloak.ClientID,     // Client ID
+		cfg.Services.Keycloak.ClientSecret, // Client Secret
 	)
 
 	// Устанавливаем соединение с gRPC User Service
-	conn, err := grpc.Dial("user_service:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial(cfg.Services.UserService.Target, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to User Service: %v", err)
 	}
